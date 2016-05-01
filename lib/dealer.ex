@@ -13,6 +13,7 @@ defmodule TwentyOne.Dealer do
 		GenServer.call(dealer, :players)
 	end
 
+	
 	def handle_call({:addPlayer, player}, _from, state) do
 		players = [ player | state[:players]]
 		newState = %{ state | :players => players}
