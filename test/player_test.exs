@@ -1,8 +1,11 @@
 defmodule TwentyOne.PlayerTest do
 	use ExUnit.Case, async: true
+	alias TwentyOne.{Card, Player}
 
+	@player_name "test-player"
+	
 	setup do
-		{:ok, player} = TwentyOne.Player.start_link
+		{:ok, player} = TwentyOne.Player.start_link(@player_name)
 		{:ok, dealer} = TwentyOne.Dealer.start_link
 		{:ok, player: player, dealer: dealer}
 	end
@@ -18,11 +21,18 @@ defmodule TwentyOne.PlayerTest do
 	end
 
 	test "players can get cards", %{player: player} do
-		card = %{}
+		card = %Card{}
 		TwentyOne.Player.card(player, card)
+		[first | _rest]  = TwentyOne.Player.reveal(player)
+		assert card == first
 	end
 
-	test "players have names", %{player: player} do
+	test "players have nicknames", %{player: player} do
+		nick = Player.name(player)
+		assert nick == @player_name
+	end
 
+	test "player can decide on next move", %{player: player} do
+		next_move = Player.next_move(player)
 	end
 end
