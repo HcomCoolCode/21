@@ -2,7 +2,7 @@ defmodule TwentyOne.PlayerTest do
 	use ExUnit.Case, async: true
 	alias TwentyOne.{Card, Player}
 
-	@player_name "test-player"
+	@player_name :test_player
 	
 	setup do
 		{:ok, player} = TwentyOne.Player.start_link(@player_name)
@@ -34,5 +34,6 @@ defmodule TwentyOne.PlayerTest do
 
 	test "player can decide on next move", %{player: player} do
 		next_move = Player.next_move(player)
+		assert Enum.any?([:hit, :stand, :split], &(next_move == &1))
 	end
 end

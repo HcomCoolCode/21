@@ -2,7 +2,7 @@ defmodule TwentyOne.Player do
 	use GenServer
 	
 	def start_link(nick) do
-		GenServer.start_link __MODULE__, %{cards: [], nick: nick}
+		GenServer.start_link __MODULE__, %{cards: [], nick: nick}, name: nick
 	end
 
 	def play(player) do
@@ -20,6 +20,10 @@ defmodule TwentyOne.Player do
 	def name(player) do
 		GenServer.call(player, {:nick})
 	end
+
+	def next_move(player) do
+		GenServer.call(player, {:next_move})
+	end
 	
 	#
 
@@ -35,5 +39,9 @@ defmodule TwentyOne.Player do
 
 	def handle_call({:nick}, _from, state) do
 		{:reply, state[:nick], state}
+	end
+
+	def handle_call({:next_move}, _from, state) do
+		{:reply, :hit, state}
 	end
 end
