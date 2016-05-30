@@ -1,6 +1,6 @@
 defmodule TwentyOne.SlothyShuffleTest do
 	use ExUnit.Case, async: true
-	alias TwentyOne.{SlothyShuffle, Deck, Card}
+	alias TwentyOne.{SlothyShuffle, Deck}
 
 	test "card count consistent" do
 		deck1 = Deck.new
