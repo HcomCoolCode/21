@@ -1,5 +1,5 @@
 defmodule TwentyOne.Game do
-	defstruct cards: [], players: [], winners: []
+	defstruct cards: [], players: [], winners: [], active: true
 	alias TwentyOne.{Deck, Game}
 	
 	def new(players) do
