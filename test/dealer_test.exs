@@ -14,12 +14,19 @@ defmodule TwentyOne.DealerTest do
 		assert Dealer.players(dealer) == [player]
 	end
 
-	test "adding player, start game, then cards", %{dealer: dealer, player: player} do
+	test "adding player then play", %{dealer: dealer, player: player} do
 		Dealer.addPlayer(dealer, player)
 		cards = Player.reveal(player)
 		assert is_list(cards)
 		assert Enum.empty?(cards)
 		results = Dealer.play(dealer)
 		assert is_list results
+	end
+
+	test "can play for more than one round", %{dealer: dealer, player: player} do
+		Dealer.addPlayer(dealer, player)
+		results = Dealer.play(dealer, 5)
+		assert is_list results
+		assert 5 == length(results)
 	end
 end

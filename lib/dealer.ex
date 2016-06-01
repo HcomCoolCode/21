@@ -3,7 +3,7 @@ defmodule TwentyOne.Dealer do
 	alias TwentyOne.{Game, Player, Hand, SlothyShuffle}
 	
 	def start_link do
-		GenServer.start_link __MODULE__, %{:players => [], :games => [], :rounds => 0}
+		GenServer.start_link __MODULE__, %{:players => []}
 	end
 
 	def addPlayer(dealer, player) do
@@ -30,7 +30,18 @@ defmodule TwentyOne.Dealer do
 		{:reply, state[:players], state}
 	end
 
-	def handle_call({:play, rounds}, _from, %{players: players} = state) when length(players) > 0 do
+	def handle_call({:play, rounds}, {from, _ref}, %{players: players} = state) when length(players) > 0 do
+		winners = play(players, from, rounds, [])
+		{:reply, winners, state}
+	end
+
+	#
+
+	defp play(_players, _from, 0, winners) do
+		winners
+	end
+	
+	defp play(players, from, rounds, winners) do
 		# new game with shuffled cards
 		names = Enum.map(players, &(Player.name(&1)))
 		g = Game.new(names)
@@ -47,13 +58,11 @@ defmodule TwentyOne.Dealer do
 		# deal to dealer
 		dealers_hand = dealer_deal(dealer_cards, remaining_cards)
 		{_status, dealers_score} = Hand.value(dealers_hand) 
-		winners = Enum.filter(players, &(Hand.value(Player.reveal(&1)) > dealers_score))
+		new_winners = Enum.filter(players, &(Hand.value(Player.reveal(&1)) > dealers_score))
 		|> Enum.map(&(Player.name(&1)))
-		games = [%Game{game| winners: winners} | state.games]
-		{:reply, Enum.map(games, &(&1.winners)), %{ state | games: games}}
+		send(from, {:ok, new_winners})
+		play(players, from, rounds - 1, [new_winners | winners])
 	end
-
-	#
 	
 	defp hit_or_stand(player, [hd | tl ] = cards) do
 		busted? = case Hand.value(Player.reveal(player)) do
