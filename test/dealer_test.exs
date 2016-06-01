@@ -19,9 +19,7 @@ defmodule TwentyOne.DealerTest do
 		cards = Player.reveal(player)
 		assert is_list(cards)
 		assert Enum.empty?(cards)
-		playing = Dealer.play(dealer)
-		assert playing == :new_game
-		cards = Player.reveal(player)
-		refute Enum.empty?(cards)
+		results = Dealer.play(dealer)
+		assert is_list results
 	end
 end
