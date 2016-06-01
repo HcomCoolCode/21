@@ -1,37 +1,41 @@
 defmodule TwentyOne.Game do
 	defstruct cards: [], players: [], winners: []
-	alias TwentyOne.{Deck, Game, Player, SlothyShuffle, Hand}
-	
+	alias TwentyOne.{Deck, Player, Hand}
+
 	def play(_players, _from, 0, winners) do
 		winners
 	end
 	
 	def play(players, from, rounds, winners) do
 		# new game with shuffled cards
-		names = Enum.map(players, &(Player.name(&1)))
-		g = new(names)
-		shuffled = SlothyShuffle.shuffle(g.cards)
-		game = %Game{ g	| cards: shuffled }
+		all_cards = new_cards
 		# deal first card
-		Enum.each(players, &(Player.card(&1, hd(game.cards))))
-		first_card = hd(game.cards)
+		[ first_card | after_first_round ] = discard(players, all_cards)
 		# deal second card
-		Enum.each(players, &(Player.card(&1, hd(game.cards))))
-		dealer_cards = [hd(game.cards), first_card]
+		[ second_card | after_second_round ] = discard(players, after_first_round)
 		# check if each player wants more cards
-		remaining_cards = Enum.reduce(players, game.cards, &(hit_or_stand(&1, &2)))
+		remaining_cards = Enum.reduce(players, after_second_round, &(hit_or_stand(&1, &2)))
 		# deal to dealer
-		dealers_hand = dealer_deal(dealer_cards, remaining_cards)
-		{_status, dealers_score} = Hand.value(dealers_hand) 
+		dealers_hand = dealer_deal([first_card, second_card], remaining_cards)
+		{_status, dealers_score} = Hand.value(dealers_hand)
 		new_winners = Enum.filter(players, &(Hand.value(Player.reveal(&1)) > dealers_score))
 		|> Enum.map(&(Player.name(&1)))
 		send(from, {:ok, new_winners})
 		play(players, from, rounds - 1, [new_winners | winners])
 	end
 
-	def new(players) do
-		cards = Enum.map(players, fn(_p) -> Deck.new end)
-		%Game{players: players, cards: cards}
+	def new_cards() do
+		1..8
+		|> Enum.map(fn(_i) -> Deck.new end)
+		|> Enum.concat
+		|> Enum.shuffle
+	end
+
+	def discard(players, cards) do
+		Enum.zip(players, cards)
+		|> Enum.each(&(Player.card(elem(&1,0), elem(&1,1))))
+
+		Enum.drop(cards, length(players))
 	end
 
 	#

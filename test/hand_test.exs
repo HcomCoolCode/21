@@ -15,6 +15,13 @@ defmodule TwentyOne.HandTest do
 
 	test "soft 17" do
 		hand = [%Card{values: [9]}, %Card{values: [7]}, %Card{values: [1,11]}]
-		assert {:ok, 17} = Hand.value(hand)
+		assert {:ok, 17} == Hand.value(hand)
+	end
+
+	test "a real hand" do
+		hand = [%TwentyOne.Card{deck_id: 0, face: 7, suit: "Heart", values: [7]},
+						%TwentyOne.Card{deck_id: 0, face: 2, suit: "Heart", values: [2]},
+						%TwentyOne.Card{deck_id: 0, face: "Q", suit: "Heart", values: [10]}]
+		assert {:ok, 19} == Hand.value(hand)
 	end
 end
