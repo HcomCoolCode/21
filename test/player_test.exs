@@ -1,29 +1,29 @@
 defmodule TwentyOne.PlayerTest do
 	use ExUnit.Case, async: true
-	alias TwentyOne.{Card, Player}
+	alias TwentyOne.{Card, Player, Dealer}
 
 	@player_name :test_player
 	
 	setup do
-		{:ok, player} = TwentyOne.Player.start_link(@player_name)
-		{:ok, dealer} = TwentyOne.Dealer.start_link
+		{:ok, player} = Player.start_link(@player_name)
+		{:ok, dealer} = Dealer.start_link
 		{:ok, player: player, dealer: dealer}
 	end
 	
 	test "players gonna play", %{player: player} do
-		assert :ok == TwentyOne.Player.play(player)
+		assert :ok == Player.play(player)
 	end
 
 	test "players can join games", %{player: player, dealer: dealer} do
-		TwentyOne.Dealer.addPlayer(dealer, player)
-		players = TwentyOne.Dealer.players(dealer)
+		Dealer.add_player(dealer, player)
+		players = Dealer.players(dealer)
 		assert Enum.any?(players, &(&1 === player))
 	end
 
 	test "players can get cards", %{player: player} do
 		card = %Card{}
-		TwentyOne.Player.card(player, card)
-		[first | _rest]  = TwentyOne.Player.reveal(player)
+		Player.card(player, card)
+		[first | _rest]  = Player.reveal(player)
 		assert card == first
 	end
 

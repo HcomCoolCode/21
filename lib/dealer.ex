@@ -6,8 +6,8 @@ defmodule TwentyOne.Dealer do
 		GenServer.start_link __MODULE__, %{:players => []}
 	end
 
-	def addPlayer(dealer, player) do
-		GenServer.call(dealer, {:addPlayer, player})
+	def add_player(dealer, player) do
+		GenServer.call(dealer, {:add_player, player})
 	end
 	
 	def players(dealer) do
@@ -20,7 +20,7 @@ defmodule TwentyOne.Dealer do
 	
 	#
 	
-	def handle_call({:addPlayer, player}, _from, state) do
+	def handle_call({:add_player, player}, _from, state) do
 		players = [ player | state[:players]]
 		newState = %{ state | :players => players}
 		{:reply, :ok, newState}
