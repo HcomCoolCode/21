@@ -3,7 +3,7 @@ defmodule TwentyOne.DealerTest do
 	alias TwentyOne.{Dealer, Player}
 	
 	setup do
-		{:ok, dealer} = TwentyOne.Dealer.start_link
+		{:ok, dealer} = Dealer.start_link
 		{:ok, player} = Player.start_link(:dealer_test_player)
 		{:ok, dealer: dealer, player: player}
 	end
