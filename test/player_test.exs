@@ -34,6 +34,6 @@ defmodule TwentyOne.PlayerTest do
 
 	test "player can decide on next move", %{player: player} do
 		next_move = Player.next_move(player)
-		assert Enum.any?([:hit, :stand, :split], &(next_move == &1))
+		assert Enum.any?([:hit, :stand], &(next_move == &1))
 	end
 end
